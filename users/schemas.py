@@ -8,7 +8,7 @@ class UserSchema(BaseModel):
     username: str
     first_name: str | None
     last_name: str | None
-    date: datetime
+    date_created: datetime
 
     class Config:
         json_encoders = {
@@ -21,5 +21,5 @@ class UserSchema(BaseModel):
             'username': self.username,
             'first_name': self.first_name,
             'last_name': self.last_name,
-            'date': self.date
+            'date_created': self.date_created
         }
