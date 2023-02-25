@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from fastapi import HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorCollection
 
+from schemas import Options
+
 
 @dataclass
 class UserRepositories:
@@ -19,3 +21,8 @@ class UserRepositories:
     async def get_users(self, limit: int, skip: int) -> list[dict]:
         cursor = self.collection.find().skip(skip).limit(limit)
         return [user async for user in cursor]
+
+    async def count_of_users(self, filter: dict, skip: int | None, limit: int | None) -> int:
+        return await self.collection.count_documents(
+            filter=filter, **Options(skip=skip, limit=limit).dict(exclude_none=True)
+        )

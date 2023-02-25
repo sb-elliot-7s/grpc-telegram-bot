@@ -18,6 +18,11 @@ response_conf = {
         'status_code': status.HTTP_200_OK,
         'response_model': UserSchema,
         'response_model_by_alias': False
+    },
+    'count': {
+        'path': '/users/count',
+        'status_code': status.HTTP_200_OK,
+        'response_model': int
     }
 }
 
@@ -26,6 +31,12 @@ response_conf = {
 async def get_users(limit: int = 20, skip: int = 0):
     repositories = UserRepositories(collection=user_collection)
     return await repositories.get_users(limit=limit, skip=skip)
+
+
+@app.get(**response_conf.get('count'))
+async def count_of_users(skip: int | None = None, limit: int | None = None):
+    return await UserRepositories(collection=user_collection) \
+        .count_of_users(filter={}, skip=skip, limit=limit)
 
 
 @app.get(**response_conf.get('detail'))

@@ -14,3 +14,8 @@ class UserSchema(BaseModel):
         json_encoders = {
             datetime: lambda x: x.strftime('%Y:%m:%d %H:%M')
         }
+
+
+class Options(BaseModel):
+    skip: int | None
+    limit: int | None
