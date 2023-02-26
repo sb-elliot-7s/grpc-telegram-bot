@@ -1,0 +1,7 @@
+grpcio==1.51.1
+protobuf==3.19.5
+grpcio-tools==1.46.5
+pydantic==1.10.4
+python-dotenv==0.21.1
+yfinance==0.2.10
+aioredis==2.0.1
