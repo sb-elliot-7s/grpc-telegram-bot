@@ -163,3 +163,4 @@ cython_debug/
 api/.env
 users/.env
 finance/.env
+bot/.env
