@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+message TickerRequest {
+  string ticker = 1;
+}
+
+message TickerResponse {
+  string currency = 1;
+  float dayHigh = 2;
+  float dayLow = 3;
+  float fiftyDayAverage = 4;
+  float lastPrice = 5;
+  float lastVolume = 6;
+  float marketCap = 7;
+  float open = 8;
+  float previousClose = 9;
+  string quoteType = 10;
+  int64 shares = 11;
+  string timezone = 12;
+  float yearChange = 13;
+  float yearHigh = 14;
+  float yearLow = 15;
+}
+
+message News {
+  string title = 1;
+  string publisher = 2;
+  string link = 3;
+  int32 providerPublishTime = 4;
+  string type = 5;
+  repeated string relatedTickers = 6;
+}
+
+message NewsResponse {
+  repeated News news = 7;
+}
+
+service Finance {
+  rpc GetFinanceResponse(TickerRequest) returns (TickerResponse) {}
+  rpc GetNewsResponse(TickerRequest) returns (NewsResponse) {}
+}
