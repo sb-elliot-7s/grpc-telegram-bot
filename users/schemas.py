@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class UserSchema(BaseModel):
-    id: int = Field(alias='user_id')
+    user_id: int
     username: str
     first_name: str | None
     last_name: str | None
@@ -17,7 +17,7 @@ class UserSchema(BaseModel):
 
     def to_mongo_obj(self):
         return {
-            '_id': self.id,
+            '_id': self.user_id,
             'username': self.username,
             'first_name': self.first_name,
             'last_name': self.last_name,
