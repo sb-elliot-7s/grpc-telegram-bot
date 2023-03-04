@@ -1,3 +1,4 @@
+import aiohttp
 import yfinance as yf
 from yfinance import Ticker
 
@@ -19,16 +20,23 @@ class CacheFinanceService(IFinanceServiceDecorator):
         return await super().retrieve_ticker_data(ticker)
 
 
+async def if_ticker_exists(ticker: str) -> bool:
+    url = f'https://finance.yahoo.com/quote/{ticker.upper()}'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url=url, allow_redirects=False) as response:
+            return True if response.status == 200 else False
+
+
 class FinanceService(Mixin, FinanceProtocol):
-    async def retrieve_ticker_data(self, ticker: str) -> dict:
+    async def retrieve_ticker_data(self, ticker: str) -> dict | None:
         result: Ticker = self.get_ticker(ticker=ticker)
-        return TickerSchema.parse_raw(result.fast_info.toJSON()).dict(by_alias=True)
+        return TickerSchema.parse_raw(result.fast_info.toJSON()).dict(by_alias=True) \
+            if await if_ticker_exists(ticker=ticker) \
+            else None
 
 
 class NewsService(Mixin, NewsTickerProtocol):
     async def retrieve_news(self, ticker: str) -> list[dict] | None:
         result: Ticker = self.get_ticker(ticker=ticker)
         news: list[dict] = result.news
-        if not len(news):
-            return None
-        return [NewsSchema(**n).dict(by_alias=True) for n in news]
+        return None if not len(news) else [NewsSchema(**n).dict(by_alias=True) for n in news]

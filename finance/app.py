@@ -29,7 +29,9 @@ class FinanceServicer(pb2_grpc.FinanceServicer):
 
     async def GetFinanceResponse(self, request: pb2.TickerRequest, context: grpc.aio.ServicerContext):
         ticker: str = await self.__retrieve_ticker(request=request, context=context)
-        ticker_data: dict = await self.__finance_service.retrieve_ticker_data(ticker=ticker)
+        ticker_data: dict | None = await self.__finance_service.retrieve_ticker_data(ticker=ticker)
+        if ticker_data is None:
+            await self.abort_invalid_argument(context=context)
         return pb2.TickerResponse(**ticker_data)
 
     async def GetNewsResponse(self, request: pb2.TickerRequest, context: grpc.aio.ServicerContext):
