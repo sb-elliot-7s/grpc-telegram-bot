@@ -23,15 +23,9 @@ class BotGRPCClient:
     async def get_news(self, ticker: str) -> pb2.NewsResponse:
         async with grpc.aio.insecure_channel(f'{self.host}:{self.port}') as channel:
             stub, message = await self.__create_stub_and_message(ticker=ticker, channel=channel)
-            return await stub.GetNewsResponse(
-                message,
-                # timeout=TIMEOUT_NEWS
-            )
+            return await stub.GetNewsResponse(message)
 
     async def get_ticker_data(self, ticker: str) -> pb2.TickerResponse:
         async with grpc.aio.insecure_channel(f'{self.host}:{self.port}') as channel:
             stub, message = await self.__create_stub_and_message(ticker=ticker, channel=channel)
-            return await stub.GetFinanceResponse(
-                message,
-                # timeout=TIMEOUT_FINANCE_DATA
-            )
+            return await stub.GetFinanceResponse(message)
