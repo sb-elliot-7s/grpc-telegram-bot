@@ -36,7 +36,7 @@ async def get_users(limit: int = 20, skip: int = 0):
 @app.get(**response_conf.get('count'))
 async def count_of_users(skip: int | None = None, limit: int | None = None):
     return await UserRepositories(collection=user_collection) \
-        .count_of_users(filter={}, skip=skip, limit=limit)
+        .count_of_users(filter_={}, skip=skip, limit=limit)
 
 
 @app.get(**response_conf.get('detail'))
