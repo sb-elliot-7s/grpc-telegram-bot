@@ -1,0 +1,20 @@
+def telegram_text_format(text: str):
+    return text. \
+        replace('_', '\\_'). \
+        replace('*', '\\*'). \
+        replace('[', '\\['). \
+        replace(']', '\\]'). \
+        replace('(', '\\('). \
+        replace(')', '\\)'). \
+        replace('~', '\\~'). \
+        replace('`', '\\`'). \
+        replace('>', '\\>'). \
+        replace('#', '\\#'). \
+        replace('+', '\\+'). \
+        replace('-', '\\-'). \
+        replace('=', '\\='). \
+        replace('|', '\\|'). \
+        replace('{', '\\{'). \
+        replace('}', '\\}'). \
+        replace('.', '\\.'). \
+        replace('!', '\\!')
