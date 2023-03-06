@@ -21,24 +21,26 @@ class FinanceServicer(pb2_grpc.FinanceServicer):
         return ticker
 
     @staticmethod
-    async def abort_invalid_argument(context: grpc.aio.ServicerContext):
-        await context.abort(
-            code=grpc.StatusCode.INVALID_ARGUMENT,
-            details='You must pass a valid ticker name'
-        )
+    async def __abort_invalid_argument(context: grpc.aio.ServicerContext):
+        options = {'code': grpc.StatusCode.INVALID_ARGUMENT, 'details': 'You must pass a valid ticker name'}
+        await context.abort(**options)
+
+    Data = dict | list[dict] | None
+
+    async def __check_if_data_is_none(self, data: Data, context: grpc.aio.ServicerContext):
+        if data is None:
+            await self.__abort_invalid_argument(context=context)
 
     async def GetFinanceResponse(self, request: pb2.TickerRequest, context: grpc.aio.ServicerContext):
         ticker: str = await self.__retrieve_ticker(request=request, context=context)
         ticker_data: dict | None = await self.__finance_service.retrieve_ticker_data(ticker=ticker)
-        if ticker_data is None:
-            await self.abort_invalid_argument(context=context)
+        await self.__check_if_data_is_none(data=ticker_data, context=context)
         return pb2.TickerResponse(**ticker_data)
 
     async def GetNewsResponse(self, request: pb2.TickerRequest, context: grpc.aio.ServicerContext):
         ticker: str = await self.__retrieve_ticker(request=request, context=context)
         news: list[dict] | None = await self.__news_service.retrieve_news(ticker=ticker)
-        if news is None:
-            await self.abort_invalid_argument(context=context)
+        await self.__check_if_data_is_none(data=news, context=context)
         return pb2.NewsResponse(news=news)
 
 
