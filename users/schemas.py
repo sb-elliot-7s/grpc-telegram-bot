@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class UserSchema(BaseModel):
     user_id: int
-    username: str
+    username: str | None
     first_name: str | None
     last_name: str | None
     date_created: datetime
