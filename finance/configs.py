@@ -4,6 +4,7 @@ from pydantic import BaseSettings
 class Configs(BaseSettings):
     redis_host: str
     redis_port: int
+    debug: bool
 
     class Config:
         env_file = '.env'

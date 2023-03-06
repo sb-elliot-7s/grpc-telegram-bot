@@ -4,8 +4,9 @@ import grpc
 
 import finance_pb2 as pb2
 import finance_pb2_grpc as pb2_grpc
+from configs import get_configs
 from protocols.finance_protocol import FinanceProtocol, NewsTickerProtocol
-from service import FinanceService, NewsService, CacheFinanceService
+from service import FinanceService, CacheFinanceService, NewsService
 
 
 class FinanceServicer(pb2_grpc.FinanceServicer):
@@ -46,12 +47,10 @@ class FinanceServicer(pb2_grpc.FinanceServicer):
 
 async def run_server():
     server = grpc.aio.server()
+    finance_service = FinanceService() if get_configs().debug else CacheFinanceService(service=FinanceService())
     pb2_grpc.add_FinanceServicer_to_server(
-        FinanceServicer(
-            finance_service=CacheFinanceService(service=FinanceService()),
-            news_service=NewsService()
-        ),
-        server
+        servicer=FinanceServicer(finance_service=finance_service, news_service=NewsService()),
+        server=server
     )
     server.add_insecure_port('[::]:50051')
     await server.start()
