@@ -1,45 +1,26 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI
 
 from deps import user_collection
 from repositories import UserRepositories
-from schemas import UserSchema
+from response_options import response_conf
+from utils import Int_Or_None
 
-app = FastAPI()
-
-response_conf = {
-    'users': {
-        'path': '/users',
-        'status_code': status.HTTP_200_OK,
-        'response_model': list[UserSchema],
-        'response_model_by_alias': False
-    },
-    'detail': {
-        'path': '/users/{user_id}',
-        'status_code': status.HTTP_200_OK,
-        'response_model': UserSchema,
-        'response_model_by_alias': False
-    },
-    'count': {
-        'path': '/users/count',
-        'status_code': status.HTTP_200_OK,
-        'response_model': int
-    }
-}
+app = FastAPI(title='API')
 
 
 @app.get(**response_conf.get('users'))
 async def get_users(limit: int = 20, skip: int = 0):
-    repositories = UserRepositories(collection=user_collection)
-    return await repositories.get_users(limit=limit, skip=skip)
+    return await UserRepositories(collection=user_collection) \
+        .get_users(limit=limit, skip=skip)
 
 
 @app.get(**response_conf.get('count'))
-async def count_of_users(skip: int | None = None, limit: int | None = None):
+async def count_of_users(skip: Int_Or_None = None, limit: Int_Or_None = None):
     return await UserRepositories(collection=user_collection) \
         .count_of_users(filter_={}, skip=skip, limit=limit)
 
 
-@app.get(**response_conf.get('detail'))
+@app.get(**response_conf.get('detail_user'))
 async def get_detail_user(user_id: int):
-    repositories = UserRepositories(collection=user_collection)
-    return await repositories.get_user(user_id=user_id)
+    return await UserRepositories(collection=user_collection) \
+        .get_user(user_id=user_id)
