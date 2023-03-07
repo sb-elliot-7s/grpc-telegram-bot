@@ -45,9 +45,13 @@ class FinanceServicer(pb2_grpc.FinanceServicer):
         return pb2.NewsResponse(news=news)
 
 
+def get_finance_service(debug: bool):
+    return FinanceService() if debug else CacheFinanceService(service=FinanceService())
+
+
 async def run_server():
     server = grpc.aio.server()
-    finance_service = FinanceService() if get_configs().debug else CacheFinanceService(service=FinanceService())
+    finance_service = get_finance_service(debug=get_configs().debug)
     pb2_grpc.add_FinanceServicer_to_server(
         servicer=FinanceServicer(finance_service=finance_service, news_service=NewsService()),
         server=server
