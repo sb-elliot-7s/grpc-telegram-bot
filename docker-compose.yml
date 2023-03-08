@@ -58,21 +58,6 @@ services:
     depends_on:
       - redis
 
-  api:
-    build:
-      context: ./api
-    container_name: api_container
-    restart: always
-    ports:
-      - 8000:8000
-    environment:
-      PORT: 8000
-      HOST: 0.0.0.0
-      MONGO_HOST: mongo
-      MONGO_PORT: 27017
-    depends_on:
-      - mongo
-
   bot:
     build:
       context: ./bot
@@ -90,13 +75,30 @@ services:
       context: ./users
     container_name: user_container
     restart: always
+    ports:
+      - 8001:8001
     depends_on:
       - kafka_broker
       - mongo
     environment:
+      HOST: 0.0.0.0
+      PORT: 8001
       MONGO_HOST: mongo
       MONGO_PORT: 27017
       KAFKA_BROKER: kafka_broker:9092
+  api:
+    build:
+      context: ./api
+    container_name: api_container
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      PORT: 8000
+      HOST: 0.0.0.0
+      USER_SERVICE_HOST: users
+    depends_on:
+      - mongo
 
 volumes:
   mongo_data:
