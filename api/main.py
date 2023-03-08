@@ -1,26 +1,28 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status, Depends
+from pydantic import HttpUrl
 
-from deps import user_collection
-from repositories import UserRepositories
+from configs import get_configs
 from response_options import response_conf
-from utils import Int_Or_None
+from schemas import QueryParams
+from service import APIService
 
 app = FastAPI(title='API')
+
+url = HttpUrl(url=f'http://{get_configs().user_service_host}:8001', scheme='http')
 
 
 @app.get(**response_conf.get('users'))
 async def get_users(limit: int = 20, skip: int = 0):
-    return await UserRepositories(collection=user_collection) \
-        .get_users(limit=limit, skip=skip)
+    return await APIService(base_url=url).get_users(limit=limit, skip=skip)
 
 
 @app.get(**response_conf.get('count'))
-async def count_of_users(skip: Int_Or_None = None, limit: Int_Or_None = None):
-    return await UserRepositories(collection=user_collection) \
-        .count_of_users(filter_={}, skip=skip, limit=limit)
+async def count_of_users(query_params: QueryParams = Depends(QueryParams.as_query)):
+    return await APIService(base_url=url).count_of_users(query_params=query_params)
 
 
 @app.get(**response_conf.get('detail_user'))
 async def get_detail_user(user_id: int):
-    return await UserRepositories(collection=user_collection) \
-        .get_user(user_id=user_id)
+    if not (user := await APIService(base_url=url).get_user(user_id=user_id)):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
+    return user
