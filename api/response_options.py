@@ -1,23 +1,30 @@
+from typing import Any
+
 from fastapi import status
 
 from schemas import UserSchema
 
+
+def get_common_options(
+        *, status_code: int = status.HTTP_200_OK,
+        model: Any,
+        path: str = ''
+) -> dict:
+    return {
+        'status_code': status_code,
+        'response_model': model,
+        'path': f'/users{path}'
+    }
+
+
 response_conf = {
     'users': {
-        'path': '/users',
-        'status_code': status.HTTP_200_OK,
-        'response_model': list[UserSchema],
-        'response_model_by_alias': False
+        **get_common_options(model=list[UserSchema])
     },
     'detail_user': {
-        'path': '/users/{user_id}',
-        'status_code': status.HTTP_200_OK,
-        'response_model': UserSchema,
-        'response_model_by_alias': False
+        **get_common_options(model=UserSchema, path='/{user_id}')
     },
     'count': {
-        'path': '/users/count',
-        'status_code': status.HTTP_200_OK,
-        'response_model': int
+        **get_common_options(path='/count', model=int)
     }
 }
