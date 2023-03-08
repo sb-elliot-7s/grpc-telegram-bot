@@ -8,4 +8,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD python3 app.py
+ENV PORT 8001
+ENV HOST 0.0.0.0
+
+CMD uvicorn app:app --host $HOST --port $PORT --reload
