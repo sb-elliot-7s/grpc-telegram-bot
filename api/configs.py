@@ -4,8 +4,7 @@ from pydantic import BaseSettings
 
 
 class Configs(BaseSettings):
-    mongo_host: str
-    mongo_port: int
+    user_service_host: str
 
     class Config:
         env_file = '.env'
