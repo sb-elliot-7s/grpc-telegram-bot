@@ -29,3 +29,10 @@ class BotGRPCClient:
         async with grpc.aio.insecure_channel(f'{self.host}:{self.port}') as channel:
             stub, message = await self.__create_stub_and_message(ticker=ticker, channel=channel)
             return await stub.GetFinanceResponse(message)
+
+    async def get_tickers_data(self, tickers: str):
+        async with grpc.aio.insecure_channel(f'{self.host}:{self.port}') as channel:
+            stub, message = await self.__create_stub_and_message(
+                ticker=tickers, channel=channel
+            )
+            return await stub.GetTickersResponse(message)
