@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class TickerSchema(BaseModel):
+    ticker: str
     currency: str
     day_high: float = Field(alias='dayHigh')
     day_low: float = Field(alias='dayLow')
