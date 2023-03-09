@@ -47,3 +47,7 @@ def get_ticker_data(ticker: str, data: pb2.TickerResponse):
     ticker = Formatter(**opt).format()
     url = telegram_text_format(text=f'\n{url}')
     return f'{ticker} {url}'
+
+
+def get_tickers_data(data: list[pb2.TickerResponse]) -> str:
+    return ''.join([f'{get_ticker_data(ticker=ticker.ticker, data=ticker)}\n\n' for ticker in data])
