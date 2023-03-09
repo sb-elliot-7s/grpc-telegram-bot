@@ -6,6 +6,9 @@ class FinanceProtocol(ABC):
     @abstractmethod
     async def retrieve_ticker_data(self, ticker: str) -> dict: pass
 
+    @abstractmethod
+    async def retrieve_tickers_data(self, tickers: list[str]) -> list[dict]: pass
+
 
 class NewsTickerProtocol(ABC):
     @abstractmethod
@@ -18,3 +21,6 @@ class IFinanceServiceDecorator(FinanceProtocol):
 
     async def retrieve_ticker_data(self, ticker: str) -> dict:
         return await self.service.retrieve_ticker_data(ticker=ticker)
+
+    async def retrieve_tickers_data(self, tickers: list[str]) -> list[dict]:
+        return await self.service.retrieve_tickers_data(tickers=tickers)
