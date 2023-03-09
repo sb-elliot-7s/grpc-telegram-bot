@@ -9,7 +9,7 @@ from decorators import grpc_error_decorator
 from grpc_client import BotGRPCClient
 from kafka_service import KafkaService
 from schemas import UserSchema
-from text_formatter import get_news_data, get_ticker_data
+from text_formatter import get_news_data, get_ticker_data, get_tickers_data
 
 bot = Bot(token=get_configs().api_token)
 dp = Dispatcher(bot=bot)
@@ -32,18 +32,32 @@ async def process_help_command(message: types.Message):
 @dp.message_handler(commands=[Commands.news.value])
 @grpc_error_decorator
 async def retrieve_news(message: types.Message):
-    ticker = message.get_args()
-    news_data: pb2.NewsResponse = await BotGRPCClient(host=get_configs().grpc_host).get_news(ticker=ticker)
-    news: list[dict] = MessageToDict(message=news_data)['news']
-    text: str = get_news_data(news=news)
-    await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2)
+    match message.get_args().split():
+        case [ticker]:
+            news_data: pb2.NewsResponse = await BotGRPCClient(host=get_configs().grpc_host).get_news(ticker=ticker)
+            news: list[dict] = MessageToDict(message=news_data)['news']
+            text: str = get_news_data(news=news)
+            return await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2)
+        case _:
+            return await message.answer(text=Constants.MUST_BE_ONE_SYMBOL.value)
+
+
+@dp.message_handler(commands=[Commands.tickers.value])
+@grpc_error_decorator
+async def retrieve_tickers_data(message: types.Message):
+    tickers: str = message.get_args()
+    tickers_data: pb2.TickersResponse = await BotGRPCClient(host=get_configs().grpc_host) \
+        .get_tickers_data(tickers=tickers)
+    text = get_tickers_data(data=tickers_data.tickerResponse)
+    await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
 
 
 @dp.message_handler()
 @grpc_error_decorator
 async def retrieve_finance_data(message: types.Message):
     ticker = message.text
-    ticker_data: pb2.TickerResponse = await BotGRPCClient(host=get_configs().grpc_host).get_ticker_data(ticker=ticker)
+    ticker_data: pb2.TickerResponse = await BotGRPCClient(host=get_configs().grpc_host) \
+        .get_ticker_data(ticker=ticker)
     text: str = get_ticker_data(ticker=message.text, data=ticker_data)
     await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2)
 
