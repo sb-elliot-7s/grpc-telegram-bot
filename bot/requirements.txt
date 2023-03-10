@@ -5,3 +5,4 @@ aiogram==2.25.1
 aiokafka==0.8.0
 pydantic==1.10.4
 python-dotenv==0.21.1
+orjson==3.8.7

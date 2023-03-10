@@ -1,5 +1,4 @@
-import json
-
+import orjson
 from aiokafka import AIOKafkaConsumer
 
 from repositories import UserRepositories
@@ -15,7 +14,7 @@ class KafkaService:
             self.topic,
             bootstrap_servers=server,
             group_id='user-group',
-            value_deserializer=lambda x: json.loads(x)
+            value_deserializer=lambda x: orjson.loads(x)
         )
 
     async def consume(self):

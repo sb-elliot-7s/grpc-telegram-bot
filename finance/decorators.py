@@ -1,7 +1,7 @@
-import json
 from dataclasses import dataclass, field
 
 import aioredis
+import orjson
 from aioredis import Redis
 
 
@@ -21,9 +21,9 @@ class RedisDecorator:
                 result = await self.redis.get(key)
                 if not result:
                     data = await func(*args, **kwargs)
-                    await self.redis.set(name=key, value=json.dumps(obj=data, default=str), ex=ex)
+                    await self.redis.set(name=key, value=orjson.dumps(data), ex=ex)
                     return data
-                return json.loads(result)
+                return orjson.loads(result)
 
             return wrapper
 
@@ -31,11 +31,7 @@ class RedisDecorator:
 
     async def _save_tickers_to_cache(self, data: list, ex: int):
         for value in data:
-            await self.redis.set(
-                name=value.get('ticker').lower(),
-                value=json.dumps(value, default=str),
-                ex=ex
-            )
+            await self.redis.set(name=value.get('ticker').lower(), value=orjson.dumps(value), ex=ex)
 
     def cache_many_tickers(self, ex: int = 60):
         def decorator(func):
@@ -48,7 +44,7 @@ class RedisDecorator:
                     data = await func(*args, **kwargs)
                     await self._save_tickers_to_cache(data=data, ex=ex)
                     return data
-                cached_tickers: list[dict] = [json.loads(ticker) for ticker in result]
+                cached_tickers: list[dict] = [orjson.loads(ticker) for ticker in result]
                 ticker_symbols_in_cache: list[str] = [t.get("ticker").lower() for t in cached_tickers]
                 if len(cached_tickers) != count_of_tickers:
                     not_in_cache_ticker: list[str] = list(set(keys) - set(ticker_symbols_in_cache))

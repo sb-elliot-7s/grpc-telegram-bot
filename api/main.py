@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, HTTPException, status, Depends, responses
 from pydantic import HttpUrl
 
 from configs import get_configs
@@ -6,7 +6,7 @@ from response_options import response_conf
 from schemas import QueryParams
 from service import APIService
 
-app = FastAPI(title='API')
+app = FastAPI(title='API', default_response_class=responses.ORJSONResponse)
 
 url = HttpUrl(url=f'http://{get_configs().user_service_host}:8001', scheme='http')
 

@@ -1,6 +1,6 @@
 import asyncio
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, responses
 
 from configs import get_configs
 from deps import user_collection
@@ -10,7 +10,7 @@ from response_configuration import response_conf
 from schemas import QueryParams
 from services import Service
 
-app = FastAPI(title='Users')
+app = FastAPI(title='Users', default_response_class=responses.ORJSONResponse)
 
 loop = asyncio.get_event_loop()
 

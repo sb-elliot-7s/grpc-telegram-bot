@@ -1,5 +1,4 @@
-import json
-
+import orjson
 from yfinance import Ticker
 
 from configs import get_configs
@@ -24,14 +23,14 @@ class CacheFinanceService(IFinanceServiceDecorator):
 class FinanceService(Mixin, FinanceProtocol):
     async def retrieve_ticker_data(self, ticker: str) -> dict | None:
         result: Ticker = self.get_ticker_data(ticker=ticker)
-        return TickerSchema(ticker=ticker, **json.loads(result.fast_info.toJSON())).dict(by_alias=True) \
+        return TickerSchema(ticker=ticker, **orjson.loads(result.fast_info.toJSON())).dict(by_alias=True) \
             if await self.if_ticker_exist(ticker=ticker) \
             else None
 
     @staticmethod
     async def return_ticker_data(name: str, data) -> dict | None:
         try:
-            return TickerSchema(ticker=name, **json.loads(data.fast_info.toJSON())).dict(by_alias=True)
+            return TickerSchema(ticker=name, **orjson.loads(data.fast_info.toJSON())).dict(by_alias=True)
         except Exception as e:
             print(e)
             return None
