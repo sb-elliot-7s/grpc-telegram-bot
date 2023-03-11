@@ -20,19 +20,16 @@ class BotGRPCClient:
         message = pb2.TickerRequest(ticker=ticker)
         return stub, message
 
-    async def get_news(self, ticker: str) -> pb2.NewsResponse:
-        async with grpc.aio.insecure_channel(f'{self.host}:{self.port}') as channel:
+    async def get_grpc_response(self, ticker: str, func_name):
+        async with grpc.aio.insecure_channel(f'{self.host}:{self.port}', compression=grpc.Compression.Gzip) as channel:
             stub, message = await self.__create_stub_and_message(ticker=ticker, channel=channel)
-            return await stub.GetNewsResponse(message)
+            return await getattr(stub, func_name)(message)
+
+    async def get_news(self, ticker: str) -> pb2.NewsResponse:
+        return await self.get_grpc_response(ticker=ticker, func_name='GetNewsResponse')
 
     async def get_ticker_data(self, ticker: str) -> pb2.TickerResponse:
-        async with grpc.aio.insecure_channel(f'{self.host}:{self.port}') as channel:
-            stub, message = await self.__create_stub_and_message(ticker=ticker, channel=channel)
-            return await stub.GetFinanceResponse(message)
+        return await self.get_grpc_response(ticker=ticker, func_name='GetFinanceResponse')
 
     async def get_tickers_data(self, tickers: str):
-        async with grpc.aio.insecure_channel(f'{self.host}:{self.port}') as channel:
-            stub, message = await self.__create_stub_and_message(
-                ticker=tickers, channel=channel
-            )
-            return await stub.GetTickersResponse(message)
+        return await self.get_grpc_response(ticker=tickers, func_name='GetTickersResponse')
