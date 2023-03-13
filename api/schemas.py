@@ -8,6 +8,7 @@ class UserSchema(BaseModel):
     first_name: str | None
     last_name: str | None
     date_created: str
+    email: str | None
 
 
 class QueryParams(BaseModel):
