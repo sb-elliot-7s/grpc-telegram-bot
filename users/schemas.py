@@ -4,12 +4,18 @@ from fastapi import Query
 from pydantic import BaseModel
 
 
+class UserUpdateSchema(BaseModel):
+    user_id: int
+    email: str | None
+
+
 class UserSchema(BaseModel):
     user_id: int
     username: str | None
     first_name: str | None
     last_name: str | None
     date_created: datetime
+    email: str | None
 
     class Config:
         json_encoders = {
