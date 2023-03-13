@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message FinancialStatementRequest {
+  string symbol = 1;
+  string email = 2;
+}
+
+message FinancialStatementResponse {
+  string symbol = 1;
+  bytes pdf = 2;
+  string year = 3;
+}
+
+service FinancialStatement {
+  rpc GetFinancialStatement(FinancialStatementRequest) returns (FinancialStatementResponse) {}
+}
