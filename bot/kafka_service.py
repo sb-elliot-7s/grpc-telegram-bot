@@ -11,7 +11,8 @@ class KafkaService:
     async def produce(self, value: dict, topic: str):
         producer = AIOKafkaProducer(
             bootstrap_servers=self.server,
-            value_serializer=lambda x: orjson.dumps(x)
+            value_serializer=lambda x: orjson.dumps(x),
+            compression_type="gzip"
         )
         await producer.start()
         try:
