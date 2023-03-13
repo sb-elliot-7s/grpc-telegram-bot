@@ -1,6 +1,12 @@
+from enum import Enum
 from functools import lru_cache
 
 from pydantic import BaseSettings
+
+
+class Topic(str, Enum):
+    USER = 'user'
+    SAVE_EMAIL = 'save_email'
 
 
 class Configs(BaseSettings):
