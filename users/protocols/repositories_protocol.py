@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from schemas import UserUpdateSchema
+
 
 class UserRepositoriesProtocol(ABC):
     @abstractmethod
@@ -20,3 +22,6 @@ class UserRepositoriesProtocol(ABC):
 
     @abstractmethod
     async def save_user(self, user: dict): pass
+
+    @abstractmethod
+    async def update_user(self, user_data: UserUpdateSchema): pass
