@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 from protocols.repositories_protocol import UserRepositoriesProtocol
-from schemas import Options, UserSchema
+from schemas import Options, UserSchema, UserUpdateSchema
 
 
 @dataclass
@@ -28,3 +28,8 @@ class UserRepositories(UserRepositoriesProtocol):
     async def get_user(self, user_id: int):
         user = await self.collection.find_one({'_id': user_id})
         return UserSchema.from_mongo_obj(mongo_user=user) if user else None
+
+    async def update_user(self, user_data: UserUpdateSchema):
+        await self.collection.update_one(filter={'_id': user_data.user_id}, update={
+            '$set': {'email': user_data.email}
+        })
