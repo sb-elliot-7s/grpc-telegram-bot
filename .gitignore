@@ -164,3 +164,4 @@ api/.env
 users/.env
 finance/.env
 bot/.env
+financial_statement/.env
