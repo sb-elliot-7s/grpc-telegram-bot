@@ -56,7 +56,7 @@ def get_finance_service(debug: bool):
 
 
 async def run_server():
-    server = grpc.aio.server()
+    server = grpc.aio.server(compression=grpc.Compression.Gzip)
     finance_service = get_finance_service(debug=get_configs().debug)
     pb2_grpc.add_FinanceServicer_to_server(
         servicer=FinanceServicer(
