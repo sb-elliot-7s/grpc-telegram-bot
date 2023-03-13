@@ -2,7 +2,7 @@ import asyncio
 
 from fastapi import FastAPI, Depends, responses
 
-from configs import get_configs
+from configs import get_configs, Topic
 from deps import user_collection
 from kafka_service import KafkaService
 from repositories import UserRepositories
@@ -17,7 +17,7 @@ loop = asyncio.get_event_loop()
 options = {
     'server': f'{get_configs().kafka_broker}',
     'repositories': UserRepositories(collection=user_collection),
-    'topic': 'user',
+    'topic': [Topic.USER.value, Topic.SAVE_EMAIL.value],
 }
 
 
