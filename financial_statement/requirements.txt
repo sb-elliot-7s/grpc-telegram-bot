@@ -1,0 +1,12 @@
+pydantic==1.10.4
+python-dotenv==0.21.1
+aiohttp==3.8.3
+grpcio==1.51.1
+protobuf==3.19.5
+grpcio-tools==1.46.5
+orjson==3.8.7
+selenium==4.8.2
+webdriver-manager==3.8.5
+aiofiles==23.1.0
+aiosmtplib==2.0.1
+aioredis==2.0.1
