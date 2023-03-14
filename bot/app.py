@@ -4,9 +4,9 @@ from google.protobuf.json_format import MessageToDict
 
 import finance_pb2 as pb2
 from configs import get_configs
-from constants import Constants, Commands
+from constants import Constants, Commands, Topic
 from decorators import grpc_error_decorator
-from grpc_client import BotGRPCClient
+from grpc_finance_client import BotGRPCClient
 from kafka_service import KafkaService
 from schemas import UserSchema
 from text_formatter import get_news_data, get_ticker_data, get_tickers_data
@@ -20,7 +20,7 @@ async def process_start_command(message: types.Message):
     telegram_user: User = message.from_user
     user = UserSchema(**telegram_user.to_python(), date_created=message.date)
     service = KafkaService(server=get_configs().kafka_broker)
-    await service.produce(topic='user', value=user.to_dict)
+    await service.produce(topic=Topic.USER.value, value=user.to_dict)
     await message.reply(text=Constants.START_TEXT.value.format(username=telegram_user.username))
 
 
@@ -50,6 +50,18 @@ async def retrieve_tickers_data(message: types.Message):
         .get_tickers_data(tickers=tickers)
     text = get_tickers_data(data=tickers_data.tickerResponse)
     await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
+
+
+@dp.message_handler(commands=['email'])
+async def save_email(message: types.Message):
+    match message.get_args().split():
+        case [email]:
+            user_id = message.from_user.id
+            await KafkaService(server=get_configs().kafka_broker) \
+                .produce(topic=Topic.SAVE_EMAIL.value, value={'user_id': user_id, 'email': email})
+            await message.answer(text='Email saving...')
+        case _:
+            await message.answer(text='You must pass only one argument - correct email')
 
 
 @dp.message_handler()
