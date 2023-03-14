@@ -42,5 +42,5 @@ class Commands(str, Enum):
 
 
 class Topic(str, Enum):
-    USER = 'user'
     SAVE_EMAIL = 'save_email'
+    USER = 'user'
