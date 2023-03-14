@@ -8,6 +8,9 @@ class Configs(BaseSettings):
     kafka_broker: str
     grpc_host: str
 
+    grpc_report_host: str
+    api_host: str
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'
