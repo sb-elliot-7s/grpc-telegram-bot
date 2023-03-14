@@ -7,9 +7,12 @@ from configs import get_configs
 from constants import Constants, Commands, Topic
 from decorators import grpc_error_decorator
 from grpc_finance_client import BotGRPCClient
+from grpc_reports_client import GRPCReportsClient
 from kafka_service import KafkaService
+from schemas import FinancialStatementRequestSchema
 from schemas import UserSchema
 from text_formatter import get_news_data, get_ticker_data, get_tickers_data
+from utils import get_report_schema
 
 bot = Bot(token=get_configs().api_token)
 dp = Dispatcher(bot=bot)
@@ -50,6 +53,14 @@ async def retrieve_tickers_data(message: types.Message):
         .get_tickers_data(tickers=tickers)
     text = get_tickers_data(data=tickers_data.tickerResponse)
     await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
+
+
+@dp.message_handler(commands=[Commands.reports.value])
+@grpc_error_decorator
+async def get_financial_statement_reports(message: types.Message):
+    schema: FinancialStatementRequestSchema = await get_report_schema(message=message)
+    report = await GRPCReportsClient(host=get_configs().grpc_report_host).get_financial_statement(**schema.dict())
+    return await bot.send_document(message.from_user.id, (f'{report.symbol}:{report.year}.pdf', report.pdf))
 
 
 @dp.message_handler(commands=['email'])
