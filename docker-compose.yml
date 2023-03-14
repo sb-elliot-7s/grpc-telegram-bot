@@ -30,17 +30,28 @@ services:
     image: redis
     container_name: redis_container
     ports:
-      - 6379:6379
+      - "6379:6379"
     restart: always
     volumes:
       - cache:/data
+
+  second_redis:
+    image: redis
+    container_name: redis_container2
+    ports:
+      - "6380:6380"
+    restart: always
+    volumes:
+      - second_cache:/data
+      - ./financial_statement/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
 
   mongo:
     image: mongo
     container_name: mongo_container
     restart: always
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
 
@@ -50,13 +61,28 @@ services:
     container_name: finance_container
     restart: always
     ports:
-      - 50051:50051
+      - "50051:50051"
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       DEBUG: False
     depends_on:
       - redis
+
+  financial_statement:
+    build:
+      context: ./financial_statement
+    container_name: financial_statements_container
+    restart: always
+    ports:
+      - "50052:50052"
+    environment:
+      REDIS_HOST: second_redis
+      REDIS_PORT: 6380
+    depends_on:
+      - second_redis
+    volumes:
+      - my_data:/app/reports
 
   bot:
     build:
@@ -69,6 +95,8 @@ services:
     environment:
       KAFKA_BROKER: kafka_broker:9092
       GRPC_HOST: finance
+      GRPC_REPORT_HOST: financial_statement
+      API_HOST: api
 
   users:
     build:
@@ -76,7 +104,7 @@ services:
     container_name: user_container
     restart: always
     ports:
-      - 8001:8001
+      - "8001:8001"
     depends_on:
       - kafka_broker
       - mongo
@@ -92,7 +120,7 @@ services:
     container_name: api_container
     restart: always
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
       PORT: 8000
       HOST: 0.0.0.0
@@ -104,3 +132,6 @@ volumes:
   mongo_data:
   cache:
     driver: local
+  second_cache:
+    driver: local
+  my_data:
