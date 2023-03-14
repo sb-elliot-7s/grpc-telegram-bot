@@ -12,3 +12,14 @@ class UserSchema(BaseModel):
 
     @property
     def to_dict(self): return self.dict()
+
+
+class FinancialStatementRequestSchema(BaseModel):
+    symbol: str
+    email: str | None = None
+
+
+class FinancialStatementResponseSchema(BaseModel):
+    symbol: str
+    pdf: bytes
+    year: str
