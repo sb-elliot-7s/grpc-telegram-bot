@@ -19,6 +19,10 @@ class Constants(str, Enum):
             fmt.bold('Write command'),
             fmt.text('/tickers and tickers symbols \\(ex\\. /tickers aapl intc msft amd\\)')
         ),
+        fmt.text(
+            fmt.bold('Write command'),
+            fmt.text('/email and your email for saving email')
+        ),
         sep='\n\n'
     )
     MUST_BE_ONE_SYMBOL = 'You must pass one ticker symbol'
@@ -29,3 +33,9 @@ class Commands(str, Enum):
     help = 'help'
     news = 'news'
     tickers = 'tickers'
+    email = 'email'
+
+
+class Topic(str, Enum):
+    USER = 'user'
+    SAVE_EMAIL = 'save_email'
