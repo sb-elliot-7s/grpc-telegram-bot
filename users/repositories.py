@@ -33,3 +33,6 @@ class UserRepositories(UserRepositoriesProtocol):
         await self.collection.update_one(filter={'_id': user_data.user_id}, update={
             '$set': {'email': user_data.email}
         })
+
+    async def remove_email(self, user_id: int):
+        await self.collection.update_one(filter={'_id': user_id}, update={'$set': {'email': None}})
