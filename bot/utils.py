@@ -1,5 +1,7 @@
+import asyncio
+
 import aiohttp
-from aiogram import types
+from aiogram import types, Bot
 
 from configs import get_configs
 from schemas import FinancialStatementRequestSchema
@@ -47,3 +49,9 @@ async def get_report_schema(message: types.Message):
         case _:
             return await message.answer(text='You must pass ticker or [ticker and email]')
     return report_schema
+
+
+async def handle_email_result(bot: Bot, message: types.Message, text: str, sleep: int = 2):
+    msg = await message.answer(text=text)
+    await asyncio.sleep(sleep)
+    await bot.delete_message(chat_id=message.from_user.id, message_id=msg.message_id)
