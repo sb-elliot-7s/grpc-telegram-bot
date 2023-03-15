@@ -51,7 +51,7 @@ async def retrieve_tickers_data(message: types.Message):
     tickers: str = message.get_args()
     tickers_data: pb2.TickersResponse = await BotGRPCClient(host=get_configs().grpc_host) \
         .get_tickers_data(tickers=tickers)
-    text = get_tickers_data(data=tickers_data.tickerResponse)
+    text = get_tickers_data(data=tickers_data.tickerResponse, from_api=True)
     await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
 
 
