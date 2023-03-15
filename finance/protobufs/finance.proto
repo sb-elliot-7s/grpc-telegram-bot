@@ -1,27 +1,51 @@
 syntax = "proto3";
 
+//message TickerResponse {
+//  string ticker = 1;
+//  string currency = 2;
+//  float dayHigh = 3;
+//  float dayLow = 4;
+//  float fiftyDayAverage = 5;
+//  float lastPrice = 6;
+//  float lastVolume = 7;
+//  float marketCap = 8;
+//  float open = 9;
+//  float previousClose = 10;
+//  string quoteType = 11;
+//  int64 shares = 12;
+//  string timezone = 13;
+//  float yearChange = 14;
+//  float yearHigh = 15;
+//  float yearLow = 16;
+//}
+
+message TickerResponse {
+  string symbol = 1;
+  string name = 2;
+  float price = 3;
+  float changesPercentage = 4;
+  float change = 5;
+  float dayLow = 6;
+  float dayHigh = 7;
+  float yearHigh = 8;
+  float yearLow = 9;
+  float marketCap = 10;
+  float priceAvg50 = 11;
+  float priceAvg200 = 12;
+  string exchange = 13;
+  float volume = 14;
+  float avgVolume = 15;
+  float open = 16;
+  float previousClose = 17;
+  float eps = 18;
+  float pe = 19;
+  string earningsAnnouncement = 20;
+  int64 sharesOutstanding = 21;
+  int64 timestamp = 22;
+}
 
 message TickerRequest {
   string ticker = 1;
-}
-
-message TickerResponse {
-  string ticker = 1;
-  string currency = 2;
-  float dayHigh = 3;
-  float dayLow = 4;
-  float fiftyDayAverage = 5;
-  float lastPrice = 6;
-  float lastVolume = 7;
-  float marketCap = 8;
-  float open = 9;
-  float previousClose = 10;
-  string quoteType = 11;
-  int64 shares = 12;
-  string timezone = 13;
-  float yearChange = 14;
-  float yearHigh = 15;
-  float yearLow = 16;
 }
 
 message TickersResponse {
