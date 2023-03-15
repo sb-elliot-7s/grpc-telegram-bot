@@ -64,10 +64,13 @@ async def get_financial_statement_reports(message: types.Message):
 
 
 @dp.message_handler(commands=['email'])
-async def save_email(message: types.Message):
+async def process_email(message: types.Message):
+    user_id = message.from_user.id
     match message.get_args().split():
+        case [str(cmd)] if cmd == 'remove':
+            await KafkaService(server=get_configs().kafka_broker) \
+                .produce(topic=Topic.REMOVE_EMAIL.value, value={'user_id': user_id})
         case [email]:
-            user_id = message.from_user.id
             await KafkaService(server=get_configs().kafka_broker) \
                 .produce(topic=Topic.SAVE_EMAIL.value, value={'user_id': user_id, 'email': email})
             await message.answer(text='Email saving...')
@@ -81,7 +84,7 @@ async def retrieve_finance_data(message: types.Message):
     ticker = message.text
     ticker_data: pb2.TickerResponse = await BotGRPCClient(host=get_configs().grpc_host) \
         .get_ticker_data(ticker=ticker)
-    text: str = get_ticker_data(ticker=message.text, data=ticker_data, company_name=ticker_data.name.capitalize())
+    text: str = get_ticker_data(ticker=message.text, data=ticker_data, company_name=ticker_data.name)
     await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2)
 
 
