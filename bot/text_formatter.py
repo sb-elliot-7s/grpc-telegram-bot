@@ -49,5 +49,10 @@ def get_ticker_data(ticker: str, data: pb2.TickerResponse):
     return f'{ticker} {url}'
 
 
-def get_tickers_data(data: list[pb2.TickerResponse]) -> str:
-    return ''.join([f'{get_ticker_data(ticker=ticker.ticker, data=ticker)}\n\n' for ticker in data])
+def get_tickers_data(data: list[pb2.TickerResponse], from_api: bool = True) -> str:
+    return ''.join(
+        [
+            f'{get_ticker_data(ticker=getattr(ticker, "symbol" if from_api else "ticker"), data=ticker)}\n\n'
+            for ticker in data
+        ]
+    )
