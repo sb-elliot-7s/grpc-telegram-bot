@@ -29,11 +29,15 @@ class RedisDecorator:
 
         return decorator
 
-    async def _save_tickers_to_cache(self, data: list, ex: int):
+    async def _save_tickers_to_cache(self, data: list, ex: int, from_api: bool = False):
         for value in data:
-            await self.redis.set(name=value.get('ticker').lower(), value=orjson.dumps(value), ex=ex)
+            await self.redis.set(
+                name=value.get('symbol' if from_api else 'ticker').lower(),
+                value=orjson.dumps(value),
+                ex=ex
+            )
 
-    def cache_many_tickers(self, ex: int = 60):
+    def cache_many_tickers(self, ex: int = 60, from_api: bool = False):
         def decorator(func):
             async def wrapper(*args, **kwargs):
                 keys: list[str] = kwargs.get('tickers')
@@ -42,14 +46,16 @@ class RedisDecorator:
                 result = [x for x in cache if x is not None]
                 if not len(result):
                     data = await func(*args, **kwargs)
-                    await self._save_tickers_to_cache(data=data, ex=ex)
+                    await self._save_tickers_to_cache(data=data, ex=ex, from_api=from_api)
                     return data
                 cached_tickers: list[dict] = [orjson.loads(ticker) for ticker in result]
-                ticker_symbols_in_cache: list[str] = [t.get("ticker").lower() for t in cached_tickers]
+                ticker_symbols_in_cache: list[str] = [
+                    t.get('symbol' if from_api else 'ticker').lower() for t in cached_tickers
+                ]
                 if len(cached_tickers) != count_of_tickers:
                     not_in_cache_ticker: list[str] = list(set(keys) - set(ticker_symbols_in_cache))
                     data = await func(*args, tickers=not_in_cache_ticker)
-                    await self._save_tickers_to_cache(data=data, ex=ex)
+                    await self._save_tickers_to_cache(data=data, ex=ex, from_api=from_api)
                     return cached_tickers + data
                 return cached_tickers
 
