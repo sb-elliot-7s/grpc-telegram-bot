@@ -81,7 +81,7 @@ async def retrieve_finance_data(message: types.Message):
     ticker = message.text
     ticker_data: pb2.TickerResponse = await BotGRPCClient(host=get_configs().grpc_host) \
         .get_ticker_data(ticker=ticker)
-    text: str = get_ticker_data(ticker=message.text, data=ticker_data)
+    text: str = get_ticker_data(ticker=message.text, data=ticker_data, company_name=ticker_data.name.capitalize())
     await message.answer(text=text, parse_mode=ParseMode.MARKDOWN_V2)
 
 

@@ -34,14 +34,14 @@ def get_news_data(news: list[dict]):
     )
 
 
-def get_ticker_data(ticker: str, data: pb2.TickerResponse):
+def get_ticker_data(company_name: str, ticker: str, data: pb2.TickerResponse):
     url = f'https://finance.yahoo.com/quote/{ticker.upper()}'
     opt = {
         'formatter': TickerView(
             bold_title=BoldTitle(),
             new_line=NewLine(),
             data=data,
-            ticker=ticker
+            company_name=company_name
         )
     }
     ticker = Formatter(**opt).format()
@@ -52,7 +52,7 @@ def get_ticker_data(ticker: str, data: pb2.TickerResponse):
 def get_tickers_data(data: list[pb2.TickerResponse], from_api: bool = True) -> str:
     return ''.join(
         [
-            f'{get_ticker_data(ticker=getattr(ticker, "symbol" if from_api else "ticker"), data=ticker)}\n\n'
+            f'{get_ticker_data(company_name=ticker.name, ticker=getattr(ticker, "symbol" if from_api else "ticker"), data=ticker)}\n\n'
             for ticker in data
         ]
     )

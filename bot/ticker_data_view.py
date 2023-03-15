@@ -10,12 +10,12 @@ from protocols.formatter_protocols import IFormat, IBoldTitle, INewLine
 class TickerView(IFormat):
     bold_title: IBoldTitle
     new_line: INewLine
-    ticker: str
+    company_name: str
     data: pb2.TickerResponse
 
     def format(self):
         return fmt.text(
-            self.bold_title.build_bold_title(ticker=self.ticker),
+            self.bold_title.build_bold_title(ticker=self.company_name),
             self.new_line.build_new_line() * 2,
             fmt.escape_md(self.data),
             sep=''
