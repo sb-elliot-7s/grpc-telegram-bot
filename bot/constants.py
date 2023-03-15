@@ -21,7 +21,7 @@ class Constants(str, Enum):
         ),
         fmt.text(
             fmt.bold('Write command'),
-            fmt.text('/email and your email for saving email')
+            fmt.text('/email and your email for saving email or /email and "remove" to remove your email from database')
         ),
         fmt.text(
             fmt.bold('Write command'),
@@ -44,3 +44,4 @@ class Commands(str, Enum):
 class Topic(str, Enum):
     SAVE_EMAIL = 'save_email'
     USER = 'user'
+    REMOVE_EMAIL = 'remove_email'
