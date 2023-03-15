@@ -17,7 +17,7 @@ loop = asyncio.get_event_loop()
 options = {
     'server': f'{get_configs().kafka_broker}',
     'repositories': UserRepositories(collection=user_collection),
-    'topic': [Topic.USER.value, Topic.SAVE_EMAIL.value],
+    'topic': [Topic.USER.value, Topic.SAVE_EMAIL.value, Topic.REMOVE_EMAIL.value],
 }
 
 
