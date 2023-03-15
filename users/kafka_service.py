@@ -1,9 +1,13 @@
+import logging
+
 import orjson
 from aiokafka import AIOKafkaConsumer
 
 from configs import Topic
 from repositories import UserRepositories
 from schemas import UserSchema, UserUpdateSchema
+
+logging.basicConfig(level=logging.DEBUG, filename='k.log')
 
 
 class KafkaService:
@@ -27,16 +31,23 @@ class KafkaService:
         user_email = UserUpdateSchema(**message.value)
         await self.repositories.update_user(user_data=user_email)
 
+    async def __handle_remove_email(self, message):
+        await self.repositories.remove_email(user_id=message.value['user_id'])
+
     async def _handle_messages(self, message):
-        if message.topic == Topic.SAVE_EMAIL.value:
-            await self.__handle_update_email_topic(message=message)
-        elif message.topic == Topic.USER.value:
-            await self.__handle_user_topic(message=message)
+        match message.topic:
+            case Topic.SAVE_EMAIL.value:
+                await self.__handle_update_email_topic(message=message)
+            case Topic.USER.value:
+                await self.__handle_user_topic(message=message)
+            case Topic.REMOVE_EMAIL.value:
+                await self.__handle_remove_email(message=message)
 
     async def consume(self):
         await self.consumer.start()
         try:
             async for message in self.consumer:
+                logging.debug('MESAGE: %s', message.value)
                 await self._handle_messages(message=message)
         finally:
             await self.consumer.stop()
