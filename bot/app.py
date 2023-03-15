@@ -12,7 +12,7 @@ from kafka_service import KafkaService
 from schemas import FinancialStatementRequestSchema
 from schemas import UserSchema
 from text_formatter import get_news_data, get_ticker_data, get_tickers_data
-from utils import get_report_schema
+from utils import get_report_schema, handle_email_result
 
 bot = Bot(token=get_configs().api_token)
 dp = Dispatcher(bot=bot)
@@ -70,10 +70,11 @@ async def process_email(message: types.Message):
         case [str(cmd)] if cmd == 'remove':
             await KafkaService(server=get_configs().kafka_broker) \
                 .produce(topic=Topic.REMOVE_EMAIL.value, value={'user_id': user_id})
+            await handle_email_result(bot=bot, message=message, text='deleting email...')
         case [email]:
             await KafkaService(server=get_configs().kafka_broker) \
                 .produce(topic=Topic.SAVE_EMAIL.value, value={'user_id': user_id, 'email': email})
-            await message.answer(text='Email saving...')
+            await handle_email_result(bot=bot, message=message, text='email saving...')
         case _:
             await message.answer(text='You must pass only one argument - correct email')
 
