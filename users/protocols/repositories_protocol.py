@@ -25,3 +25,6 @@ class UserRepositoriesProtocol(ABC):
 
     @abstractmethod
     async def update_user(self, user_data: UserUpdateSchema): pass
+
+    @abstractmethod
+    async def remove_email(self, user_id: int): pass
