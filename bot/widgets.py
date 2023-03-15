@@ -36,7 +36,7 @@ class Date(IDate):
 
 class BoldTitle(IBoldTitle):
     @staticmethod
-    def build_bold_title(ticker: str): return fmt.bold(f'{ticker}')
+    def build_bold_title(ticker: str): return fmt.bold(ticker)
 
 
 class RelatedTickers(IRelatedTickers):
