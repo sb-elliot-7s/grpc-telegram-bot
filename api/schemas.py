@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import Query
 from pydantic import BaseModel
 
@@ -30,3 +32,12 @@ class QueryParams(BaseModel):
             date_created=date_created,
             operator_date_created=operator_date_created
         )
+
+
+class RespSchema(BaseModel):
+    status_code: int
+    response_model: Any
+    path: str
+
+    class Config:
+        arbitrary_types_allowed = True
