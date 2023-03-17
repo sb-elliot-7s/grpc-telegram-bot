@@ -1,14 +1,21 @@
 syntax = "proto3";
 
+enum TypePDFResponse {
+  PDF_URL = 0;
+  PDF_BYTES = 1;
+}
+
 message FinancialStatementRequest {
   string symbol = 1;
   string email = 2;
+  TypePDFResponse pdf_response = 3;
 }
 
 message FinancialStatementResponse {
   string symbol = 1;
   bytes pdf = 2;
   string year = 3;
+  string pdf_url = 4;
 }
 
 service FinancialStatement {
