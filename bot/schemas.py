@@ -1,4 +1,5 @@
 import datetime
+from enum import IntEnum
 
 from pydantic import BaseModel, Field
 
@@ -14,12 +15,19 @@ class UserSchema(BaseModel):
     def to_dict(self): return self.dict()
 
 
+class TypePDFResponse(IntEnum):
+    PDF_URL = 0
+    PDF_BYTES = 1
+
+
 class FinancialStatementRequestSchema(BaseModel):
     symbol: str
     email: str | None = None
+    pdf_response: TypePDFResponse | None = TypePDFResponse.PDF_URL
 
 
 class FinancialStatementResponseSchema(BaseModel):
     symbol: str
-    pdf: bytes
+    pdf: bytes | None
     year: str
+    pdf_url: str | None
