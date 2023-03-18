@@ -165,3 +165,4 @@ users/.env
 finance/.env
 bot/.env
 financial_statement/.env
+email_service/.env
