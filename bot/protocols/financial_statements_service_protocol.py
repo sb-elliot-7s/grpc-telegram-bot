@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 
+from schemas import FinancialStatementRequestSchema
+
 
 class FinancialStatementServiceProtocol(ABC):
     @abstractmethod
-    async def get_financial_statement(
-            self, symbol: str,
-            count_of_years: int = 1,
-            email: str | None = None
-    ):
+    async def get_financial_statement(self, schema: FinancialStatementRequestSchema):
         pass
