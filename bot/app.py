@@ -1,5 +1,3 @@
-import logging
-
 from aiogram import Bot, Dispatcher, types, executor
 from aiogram.types import ParseMode, User
 from aiogram.utils.markdown import link
@@ -16,7 +14,6 @@ from schemas import FinancialStatementRequestSchema, UserSchema
 from text_formatter import get_tickers_data, get_news_data, get_ticker_data
 from utils import handle_email_command, get_report_schema, is_email_valid
 
-logging.basicConfig(level=logging.DEBUG, filename='b.log')
 bot = Bot(token=get_configs().api_token)
 dp = Dispatcher(bot=bot)
 
@@ -40,7 +37,8 @@ async def process_start_command(message: types.Message):
     user = UserSchema(**telegram_user.to_python(), date_created=message.date)
     service = KafkaService(server=get_configs().kafka_broker)
     await service.produce(topic=Topic.USER.value, value=user.to_dict)
-    await message.reply(text=Constants.START_TEXT.value.format(username=telegram_user.username))
+    await message.reply(text=Constants.START_TEXT.value
+                        .format(username=telegram_user.username or telegram_user.first_name))
 
 
 @dp.message_handler(commands=[Commands.HELP.value])
