@@ -1,0 +1,7 @@
+pydantic==1.10.4
+python-dotenv==0.21.1
+aiokafka==0.8.0
+orjson==3.8.7
+aiosmtplib==2.0.1
+boto3==1.26.90
+aiofiles==23.1.0
