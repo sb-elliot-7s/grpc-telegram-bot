@@ -10,3 +10,5 @@ webdriver-manager==3.8.5
 aiofiles==23.1.0
 aiosmtplib==2.0.1
 aioredis==2.0.1
+aiokafka==0.8.0
+boto3==1.26.90
