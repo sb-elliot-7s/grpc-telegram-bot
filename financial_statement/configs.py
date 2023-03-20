@@ -15,6 +15,13 @@ class Configs(BaseSettings):
     email_port: int
     email_password: str
 
+    expires_in_boto3: int = 3600
+    bucket_name: str
+    aws_access_key_id: str
+    aws_secret_access_key: str
+
+    kafka_broker: str
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'
