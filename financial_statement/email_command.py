@@ -13,4 +13,4 @@ class EmailGrpcCommand(CommandDecoratorProtocol):
         return await self.command.execute()
 
     async def __send_email(self):
-        await self.email_service.send_to_email()
+        await self.email_service.send_email()
