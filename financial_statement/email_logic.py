@@ -4,27 +4,30 @@ from email.mime.multipart import MIMEMultipart
 
 import aiosmtplib
 
+from configs import get_configs
 from protocols.email_service_protocol import EmailServiceProtocol
 
 
 @dataclass
 class EmailService(EmailServiceProtocol):
     pdf: bytes
-    text: str
+    filename: str
     to_user: str
-    from_user: str
-    email_host: str
-    email_port: int
-    email_password: str
-    year: str
+    from_user: str = get_configs().from_user
+    email_host: str = get_configs().email_host
+    email_port: int = get_configs().email_port
+    email_password: str = get_configs().email_password
 
-    async def send_to_email(self):
+    async def _build_pdf_file(self, msg: MIMEMultipart):
+        msg['Subject'] = self.filename
+        attach = MIMEApplication(self.pdf, _subtype="pdf", name=self.filename)
+        msg.attach(attach)
+
+    async def send_email(self):
         msg = MIMEMultipart()
         msg['From'] = self.from_user
         msg['To'] = self.to_user
-        msg['Subject'] = self.text
-        attach = MIMEApplication(self.pdf, _subtype="pdf", name=f'{self.text}:{self.year}')
-        msg.attach(attach)
+        await self._build_pdf_file(msg=msg)
         await aiosmtplib.send(
             message=msg,
             hostname=self.email_host,
