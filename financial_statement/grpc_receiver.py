@@ -9,13 +9,11 @@ from protocols.grpc_service_protocol import GRPCServiceProtocol
 @dataclass
 class GRPCReceiver(GRPCServiceProtocol):
     context: grpc.aio.ServicerContext
-    pdf: bytes
+    pdf: bytes | str
     symbol: str
     year: str
 
     async def response(self):
-        return rpb2.FinancialStatementResponse(
-            symbol=self.symbol,
-            pdf=self.pdf,
-            year=self.year
-        )
+        pdf_url = self.pdf if isinstance(self.pdf, str) else None
+        pdf_bytes = self.pdf if isinstance(self.pdf, bytes) else None
+        return rpb2.FinancialStatementResponse(symbol=self.symbol, pdf=pdf_bytes, year=self.year, pdf_url=pdf_url)
