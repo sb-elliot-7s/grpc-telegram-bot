@@ -33,12 +33,7 @@ class APIService(APIServiceProtocol):
         return await self._aiohttp_process(path=RoutePaths.USERS.value, **params)
 
     async def get_user(self, user_id: int):
-        return await self._aiohttp_process(
-            path=RoutePaths.DETAIL.value.format(user_id=user_id)
-        )
+        return await self._aiohttp_process(path=RoutePaths.DETAIL.value.format(user_id=user_id))
 
     async def count_of_users(self, query_params: QueryParams):
-        return await self._aiohttp_process(
-            path=RoutePaths.COUNT.value,
-            **query_params.dict(exclude_none=True)
-        )
+        return await self._aiohttp_process(path=RoutePaths.COUNT.value, **query_params.dict(exclude_none=True))
