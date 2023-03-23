@@ -2,7 +2,8 @@ import asyncio
 
 from fastapi import FastAPI, Depends, responses
 
-from configs import get_configs, Topic
+from configs import get_configs
+from constants import Topic
 from deps import user_collection
 from kafka_service import KafkaService
 from repositories import UserRepositories
