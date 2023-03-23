@@ -1,7 +1,11 @@
 from datetime import datetime
+from typing import Any
 
+import orjson
 from fastapi import Query
 from pydantic import BaseModel
+
+from constants import GroupID
 
 
 class UserUpdateSchema(BaseModel):
@@ -9,13 +13,11 @@ class UserUpdateSchema(BaseModel):
     email: str | None
 
 
-class UserSchema(BaseModel):
-    user_id: int
+class UserSchema(UserUpdateSchema):
     username: str | None
     first_name: str | None
     last_name: str | None
     date_created: datetime
-    email: str | None
 
     class Config:
         json_encoders = {
@@ -52,3 +54,8 @@ class QueryParams(Options):
             date_created=date_created,
             operator_date_created=operator_date_created
         )
+
+
+class KafkaSettingsSchema(BaseModel):
+    group_id: str = GroupID.USER_GROUP.value
+    value_deserializer: Any = lambda x: orjson.loads(x)
