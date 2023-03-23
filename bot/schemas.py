@@ -1,6 +1,8 @@
 import datetime
 from enum import IntEnum
+from typing import Any
 
+import orjson
 from pydantic import BaseModel, Field
 
 
@@ -31,3 +33,9 @@ class FinancialStatementResponseSchema(BaseModel):
     pdf: bytes | None
     year: str
     pdf_url: str | None
+
+
+class KafkaSettingsSchema(BaseModel):
+    bootstrap_servers: list | str
+    value_serializer: Any = lambda x: orjson.dumps(x)
+    compression_type: str = 'gzip'
