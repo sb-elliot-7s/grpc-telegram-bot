@@ -13,7 +13,7 @@ def get_common_options(
     return {
         'status_code': status_code,
         'response_model': model,
-        'path': f'/users{path}'
+        'path': f'/users{path}',
     }
 
 
