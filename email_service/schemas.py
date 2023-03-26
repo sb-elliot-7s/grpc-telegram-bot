@@ -1,6 +1,10 @@
+from typing import Any
+
+import orjson
 from pydantic import BaseModel, Field
 
 from configs import get_configs
+from constants import GroupID
 
 
 class EmailDataSchema(BaseModel):
@@ -31,3 +35,9 @@ class YandexS3StorageOptionsSchema(BaseModel):
     aws_secret_access_key: str = get_configs().aws_secret_access_key
     region_name: str = 'ru-central1'
     endpoint_url: str = 'https://storage.yandexcloud.net'
+
+
+class KafkaSettingsSchema(BaseModel):
+    bootstrap_servers: str = get_configs().kafka_broker
+    group_id: str = GroupID.EMAIL_USER.value
+    value_deserializer: Any = lambda x: orjson.loads(x)
