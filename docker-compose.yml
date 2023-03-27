@@ -79,8 +79,10 @@ services:
     environment:
       REDIS_HOST: second_redis
       REDIS_PORT: 6380
+      KAFKA_BROKER: kafka_broker:9092
     depends_on:
       - second_redis
+      - kafka_broker
     volumes:
       - my_data:/app/reports
 
@@ -114,6 +116,7 @@ services:
       MONGO_HOST: mongo
       MONGO_PORT: 27017
       KAFKA_BROKER: kafka_broker:9092
+
   api:
     build:
       context: ./api
@@ -127,6 +130,17 @@ services:
       USER_SERVICE_HOST: users
     depends_on:
       - mongo
+
+  email_service:
+    build:
+      context: ./email_service
+    container_name: email_container
+    restart: always
+    environment:
+      KAFKA_BROKER: kafka_broker:9092
+    depends_on:
+      - kafka_broker
+      - financial_statement
 
 volumes:
   mongo_data:
