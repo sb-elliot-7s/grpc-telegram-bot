@@ -1,5 +1,5 @@
+import asyncio
 import base64
-import gzip
 import logging
 from dataclasses import dataclass, field
 
@@ -9,14 +9,14 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.remote_connection import LOGGER
 
-from local_pdf_download import PDFDownload
+from protocols.pdf_generator_protocol import PDFGeneratorProtocol
+from schemas import PrintOptionsSchema
 
 LOGGER.setLevel(logging.WARNING)
 
 
 @dataclass
-class PdfGenerator:
-    file_service: PDFDownload = PDFDownload(folder='reports')
+class PdfGenerator(PDFGeneratorProtocol):
     driver: WebDriver = field(init=False)
 
     def __post_init__(self):
@@ -35,16 +35,10 @@ class PdfGenerator:
             options=webdriver_options
         )
 
-    async def _generate_pdf(self, url: str):
-        self.driver.get(url=url)
-        print_options = {
-            'paperWidth': 6.97,
-            'paperHeight': 11.0,
-        }
-        result = self.driver.execute_cdp_cmd("Page.printToPDF", print_options)['data']
-        return base64.b64decode(result)
-
-    async def main(self, url: str, symbol: str, year: str = '2022') -> bytes:
-        pdf = await self._generate_pdf(url=url)
-        await self.file_service.save_pdf(symbol=symbol, year=year, pdf=pdf)
-        return gzip.compress(pdf)
+    async def generate_pdf(self) -> bytes:
+        self.driver.get(url=self.url)
+        print_options_schema = PrintOptionsSchema(paperWidth=6.97, paperHeight=11.0)
+        result = await asyncio.to_thread(
+            self.driver.execute_cdp_cmd, 'Page.printToPDF', print_options_schema.dict()
+        )
+        return base64.b64decode(result['data'])
