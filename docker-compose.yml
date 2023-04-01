@@ -7,10 +7,12 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    restart: always
 
   kafka_broker:
     image: confluentinc/cp-kafka:7.3.0
     container_name: broker
+    restart: always
     ports:
       # To learn about configuring Kafka for access across networks see
       # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
@@ -25,6 +27,11 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: [ "CMD", "kafka-topics", "--bootstrap-server", "broker:9092", "--list" ]
+      interval: 60s
+      timeout: 10s
+      retries: 15
 
   redis:
     image: redis
@@ -80,11 +87,14 @@ services:
       REDIS_HOST: second_redis
       REDIS_PORT: 6380
       KAFKA_BROKER: kafka_broker:9092
+      DOCUMENT_GRPC_HOST: document_generator_service
     depends_on:
-      - second_redis
-      - kafka_broker
-    volumes:
-      - my_data:/app/reports
+      second_redis:
+        condition: service_started
+      kafka_broker:
+        condition: service_healthy
+      document_generator_service:
+        condition: service_started
 
   bot:
     build:
@@ -92,8 +102,10 @@ services:
     container_name: bot_container
     restart: always
     depends_on:
-      - kafka_broker
-      - finance
+      kafka_broker:
+        condition: service_healthy
+      finance:
+        condition: service_started
     environment:
       KAFKA_BROKER: kafka_broker:9092
       GRPC_HOST: finance
@@ -108,8 +120,10 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      - kafka_broker
-      - mongo
+      kafka_broker:
+        condition: service_healthy
+      mongo:
+        condition: service_started
     environment:
       HOST: 0.0.0.0
       PORT: 8001
@@ -139,8 +153,10 @@ services:
     environment:
       KAFKA_BROKER: kafka_broker:9092
     depends_on:
-      - kafka_broker
-      - financial_statement
+      kafka_broker:
+        condition: service_healthy
+      financial_statement:
+        condition: service_started
 
 volumes:
   mongo_data:
